@@ -8,7 +8,7 @@
 // @inject      into content
 // @grant       none
 // @version     0.1.0
-// @author      -
+// @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
 
