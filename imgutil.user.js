@@ -7,7 +7,7 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.0
+// @version     0.1.1
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
@@ -19,6 +19,7 @@ function removeDim(imgWrapperNode)
       imgWrapperNode.style.removeProperty("width");
       imgWrapperNode.style.removeProperty("height");
       let imgNode = imgWrapperNode.childNodes[0];
+  console.log(imgWrapperNode);
       console.log(imgNode)
       console.log(imgNode.style.width)
       imgNode.style.removeProperty("width");
@@ -65,14 +66,14 @@ const changeImageDimensions = (mutationsList, observer)=>
         // > div.wrapper__8e1d7 > div.imageWrapper_fd6587.image__79a29
       let wrapper = addedNode.childNodes[0].childNodes[0].childNodes[0].childNodes[0];
       mutationObserverThree.observe(wrapper,configChild);
-      let imgWrapperNode = wrapper.childNodes[0];
+      let imgWrapperNode = wrapper.childNodes[0].tagName === 'IMG'? wrapper:wrapper.childNodes[0];
+      console.log(wrapper);
       removeDim(imgWrapperNode);
       break;
     }
     for(removedNode of mutations.removedNodes)
       if(removedNode.className === 'layer_ad604d')
         {
-          mutationObserverTwo.disconnect();
           mutationObserverThree.disconnect();
         }
   }
