@@ -7,31 +7,29 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.1
+// @version     0.1.2
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
 
 //function to remove the styles and get params that force a small dimension in discord's image preview
-function removeDim(imgWrapperNode)
+async function removeDim(imgWrapperNode)
 {
    //remove width and height properties
       imgWrapperNode.style.removeProperty("width");
       imgWrapperNode.style.removeProperty("height");
       let imgNode = imgWrapperNode.childNodes[0];
-  console.log(imgWrapperNode);
-      console.log(imgNode)
-      console.log(imgNode.style.width)
+      while(imgNode===null || imgNode.tagName !== 'IMG'){
+        await new Promise((a)=>{setTimeout(a,500)})
+        imgNode = imgWrapperNode.querySelector('img');
+      }
       imgNode.style.removeProperty("width");
-      console.log(imgNode.style.width)
       imgNode.style.removeProperty("height");
       //set max size of image to viewport
       imgNode.style['max-width'] = '100vh';
       imgNode.style['max-height'] = '100vh';
       // change the source so it requests the full-size image
-      console.log(imgNode.src)
       imgNode.src = imgNode.src.replace(imgRegex,'');
-      console.log(imgNode.src)
 }
 
 const config = { attributes: false, childList: true, subtree: false };
@@ -57,18 +55,16 @@ const changeImageDimensions = (mutationsList, observer)=>
       continue;
     for(addedNode of mutations.addedNodes)
     {
-      if(addedNode.className !== "layer_ad604d")
-        continue;
+      wrapper = addedNode.querySelector('.imageWrapper_fd6587')
+      if(wrapper === null) continue;
       //.notAppAsidePanel__9d124 > div:nth-child(4)
       // in theory, this should give the parent of the img
       // html structure below:
       //div.layer_ad604d > div.focusLock__10aa5 > div.modal_d2e7a7.root_a28985.fullscreenOnMobile__96797.rootWithShadow__073a7
         // > div.wrapper__8e1d7 > div.imageWrapper_fd6587.image__79a29
-      let wrapper = addedNode.childNodes[0].childNodes[0].childNodes[0].childNodes[0];
       mutationObserverThree.observe(wrapper,configChild);
-      let imgWrapperNode = wrapper.childNodes[0].tagName === 'IMG'? wrapper:wrapper.childNodes[0];
-      console.log(wrapper);
-      removeDim(imgWrapperNode);
+      removeDim(wrapper);
+      carouselWrapperObserver.observe(document.querySelector('.wrapper__8e1d7'),{childList:true})
       break;
     }
     for(removedNode of mutations.removedNodes)
@@ -84,13 +80,21 @@ const nodeRemoved = (mutationsList, observer)=>
   for(mutations of mutationsList)
     {
       console.log(mutations);
-      if(mutations.target.className === 'imageWrapper_fd6587 image__79a29' && !(mutations.addedNodes === undefined || mutations.addedNodes.length==0))
+      if(mutations.target.classList.contains('imageWrapper_fd6587') && !(mutations.addedNodes === undefined || mutations.addedNodes.length==0))
       {
         observer.disconnect();
         removeDim(mutations.target);
       }
     }
 }
+
+let carouselWrapperObserver = new MutationObserver((e)=>{
+  for(m of e){
+    if(m.addedNodes.length > 0&& m.addedNodes[0].tagName==='DIV')
+      {removeDim(m.addedNodes[0])
+      break}
+  }
+})
 
 let mutationObserver = new MutationObserver(changeImageDimensions)
 let mutationObserverThree = new MutationObserver(nodeRemoved)
