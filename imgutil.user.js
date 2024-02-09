@@ -7,7 +7,7 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.2
+// @version     0.1.3
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
@@ -29,15 +29,15 @@ async function removeDim(imgWrapperNode)
       imgNode.style['max-width'] = '100vh';
       imgNode.style['max-height'] = '100vh';
       // change the source so it requests the full-size image
-      imgNode.src = imgNode.src.replace(imgRegex,'');
+      let uS = imgNode.src.split('?')
+      let p = new URLSearchParams(uS[1])
+      p.delete('width')
+      p.delete('height')
+      imgNode.src = uS[0] + '?' + p.toString()
 }
 
 const config = { attributes: false, childList: true, subtree: false };
 const configChild = {attributes:true,childList:true,subtree:false};
-//this regex should remove all GET params
-const imgRegex = /\?[a-z0-9=&]*$/gi;
-// this regex should remove only the image dimension GET params
-const imgRegexDim = /\&width=[0-9]+&height=[0-9]+/gi;
 
 //callback that's run when the page loads the main content; adds mutationobserver to observe the chat container
 const foo = ()=>
