@@ -4,10 +4,11 @@
 // @require  http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js
 // @require  https://gist.github.com/raw/2625891/waitForKeyElements.js
 // @match       https://discord.com/channels/*
+// @match       https://discord.com/login
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.3
+// @version     0.1.4
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
