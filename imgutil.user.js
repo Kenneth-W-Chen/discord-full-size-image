@@ -8,7 +8,7 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.4
+// @version     0.1.5
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
@@ -17,12 +17,16 @@
 async function removeDim(imgWrapperNode)
 {
    //remove width and height properties
+      if(imgWrapperNode.parentNode.classList.contains('videoWrapper_d7c5f4'))
+        return
       imgWrapperNode.style.removeProperty("width");
       imgWrapperNode.style.removeProperty("height");
       let imgNode = imgWrapperNode.childNodes[0];
       while(imgNode===null || imgNode.tagName !== 'IMG'){
         await new Promise((a)=>{setTimeout(a,500)})
         imgNode = imgWrapperNode.querySelector('img');
+        if(imgWrapperNode===null)
+          return;
       }
       imgNode.style.removeProperty("width");
       imgNode.style.removeProperty("height");
@@ -44,7 +48,7 @@ const configChild = {attributes:true,childList:true,subtree:false};
 const foo = ()=>
 {
   // Check to see if the chat container was updated
-  const searchNode = document.querySelector(".notAppAsidePanel__9d124 > .layerContainer_d5a653:nth-child(4)");
+  const searchNode = document.querySelector(".notAppAsidePanel__95814 > .layerContainer_a2fcaa");
   mutationObserver.observe(searchNode, config);
 }
 
@@ -56,7 +60,7 @@ const changeImageDimensions = (mutationsList, observer)=>
       continue;
     for(addedNode of mutations.addedNodes)
     {
-      wrapper = addedNode.querySelector('.imageWrapper_fd6587')
+      wrapper = addedNode.querySelector('.imageWrapper__178ee')
       if(wrapper === null) continue;
       //.notAppAsidePanel__9d124 > div:nth-child(4)
       // in theory, this should give the parent of the img
@@ -65,7 +69,9 @@ const changeImageDimensions = (mutationsList, observer)=>
         // > div.wrapper__8e1d7 > div.imageWrapper_fd6587.image__79a29
       mutationObserverThree.observe(wrapper,configChild);
       removeDim(wrapper);
-      carouselWrapperObserver.observe(document.querySelector('.wrapper__8e1d7'),{childList:true})
+      carousel = document.querySelector('.modalCarouselWrapper__1858d')
+      if(carousel===null)continue;
+      carouselWrapperObserver.observe(carousel,{childList:true})
       break;
     }
     for(removedNode of mutations.removedNodes)
@@ -80,8 +86,7 @@ const nodeRemoved = (mutationsList, observer)=>
 {
   for(mutations of mutationsList)
     {
-      console.log(mutations);
-      if(mutations.target.classList.contains('imageWrapper_fd6587') && !(mutations.addedNodes === undefined || mutations.addedNodes.length==0))
+      if(mutations.target.classList.contains('imageWrapper__178ee') && !(mutations.addedNodes === undefined || mutations.addedNodes.length==0))
       {
         observer.disconnect();
         removeDim(mutations.target);
@@ -92,11 +97,12 @@ const nodeRemoved = (mutationsList, observer)=>
 let carouselWrapperObserver = new MutationObserver((e)=>{
   for(m of e){
     if(m.addedNodes.length > 0&& m.addedNodes[0].tagName==='DIV')
-      {removeDim(m.addedNodes[0])
+      {
+        removeDim(m.addedNodes[0].querySelector('.imageWrapper__178ee'))
       break}
   }
 })
 
 let mutationObserver = new MutationObserver(changeImageDimensions)
 let mutationObserverThree = new MutationObserver(nodeRemoved)
-waitForKeyElements("div.layerContainer_d5a653", foo);
+waitForKeyElements("div.container_debb33", foo);
