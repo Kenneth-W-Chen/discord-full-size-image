@@ -8,7 +8,7 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.5
+// @version     0.1.6
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
@@ -69,7 +69,7 @@ const changeImageDimensions = (mutationsList, observer)=>
         // > div.wrapper__8e1d7 > div.imageWrapper_fd6587.image__79a29
       mutationObserverThree.observe(wrapper,configChild);
       removeDim(wrapper);
-      carousel = document.querySelector('.modalCarouselWrapper__1858d')
+      carousel = document.querySelector('.modalCarouselWrapper__1858d > .wrapper__4350e')
       if(carousel===null)continue;
       carouselWrapperObserver.observe(carousel,{childList:true})
       break;
@@ -98,7 +98,7 @@ let carouselWrapperObserver = new MutationObserver((e)=>{
   for(m of e){
     if(m.addedNodes.length > 0&& m.addedNodes[0].tagName==='DIV')
       {
-        removeDim(m.addedNodes[0].querySelector('.imageWrapper__178ee'))
+        removeDim(m.addedNodes[0])
       break}
   }
 })
