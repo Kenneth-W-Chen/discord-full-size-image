@@ -8,16 +8,23 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.6
+// @version     0.1.7
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
+
+const appContainerSelector = '.notAppAsidePanel__95814 > .layerContainer_a2fcaa'
+const imageWrapperClass = 'imageWrapper__152ac'
+const videoWrapperClass = 'videoWrapper_d7c5f4'
+const carouselSelector = '.modalCarouselWrapper__1858d > .wrapper__4350e'
+const imagePopUpLayerParentClass = 'layer_c14d31' // div that gets removed when closing the image/video pop-up
+const userPanelClass = 'div.container_debb33' // the part of the UI with username, status, pfp, mute, deafen, and settings
 
 //function to remove the styles and get params that force a small dimension in discord's image preview
 async function removeDim(imgWrapperNode)
 {
    //remove width and height properties
-      if(imgWrapperNode.parentNode.classList.contains('videoWrapper_d7c5f4'))
+      if(imgWrapperNode.parentNode.classList.contains(videoWrapperClass))
         return
       imgWrapperNode.style.removeProperty("width");
       imgWrapperNode.style.removeProperty("height");
@@ -48,7 +55,7 @@ const configChild = {attributes:true,childList:true,subtree:false};
 const foo = ()=>
 {
   // Check to see if the chat container was updated
-  const searchNode = document.querySelector(".notAppAsidePanel__95814 > .layerContainer_a2fcaa");
+  const searchNode = document.querySelector(appContainerSelector);
   mutationObserver.observe(searchNode, config);
 }
 
@@ -60,22 +67,17 @@ const changeImageDimensions = (mutationsList, observer)=>
       continue;
     for(addedNode of mutations.addedNodes)
     {
-      wrapper = addedNode.querySelector('.imageWrapper__178ee')
+      wrapper = addedNode.querySelector('.'+imageWrapperClass)
       if(wrapper === null) continue;
-      //.notAppAsidePanel__9d124 > div:nth-child(4)
-      // in theory, this should give the parent of the img
-      // html structure below:
-      //div.layer_ad604d > div.focusLock__10aa5 > div.modal_d2e7a7.root_a28985.fullscreenOnMobile__96797.rootWithShadow__073a7
-        // > div.wrapper__8e1d7 > div.imageWrapper_fd6587.image__79a29
       mutationObserverThree.observe(wrapper,configChild);
       removeDim(wrapper);
-      carousel = document.querySelector('.modalCarouselWrapper__1858d > .wrapper__4350e')
+      carousel = document.querySelector(carouselSelector)
       if(carousel===null)continue;
       carouselWrapperObserver.observe(carousel,{childList:true})
       break;
     }
     for(removedNode of mutations.removedNodes)
-      if(removedNode.className === 'layer_ad604d')
+      if(removedNode.className === imagePopUpLayerParentClass)
         {
           mutationObserverThree.disconnect();
         }
@@ -86,7 +88,7 @@ const nodeRemoved = (mutationsList, observer)=>
 {
   for(mutations of mutationsList)
     {
-      if(mutations.target.classList.contains('imageWrapper__178ee') && !(mutations.addedNodes === undefined || mutations.addedNodes.length==0))
+      if(mutations.target.classList.contains('imageWrapperClass') && !(mutations.addedNodes === undefined || mutations.addedNodes.length==0))
       {
         observer.disconnect();
         removeDim(mutations.target);
@@ -98,6 +100,7 @@ let carouselWrapperObserver = new MutationObserver((e)=>{
   for(m of e){
     if(m.addedNodes.length > 0&& m.addedNodes[0].tagName==='DIV')
       {
+        console.log('remove',m.addedNodes[0])
         removeDim(m.addedNodes[0])
       break}
   }
@@ -105,4 +108,4 @@ let carouselWrapperObserver = new MutationObserver((e)=>{
 
 let mutationObserver = new MutationObserver(changeImageDimensions)
 let mutationObserverThree = new MutationObserver(nodeRemoved)
-waitForKeyElements("div.container_debb33", foo);
+waitForKeyElements(userPanelClass, foo);
