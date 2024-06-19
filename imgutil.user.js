@@ -8,33 +8,36 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.7
+// @version     0.1.8
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
 
-const appContainerSelector = '.notAppAsidePanel__95814 > .layerContainer_a2fcaa'
-const imageWrapperClass = 'imageWrapper__152ac'
-const videoWrapperClass = 'videoWrapper_d7c5f4'
-const carouselSelector = '.modalCarouselWrapper__1858d > .wrapper__4350e'
-const imagePopUpLayerParentClass = 'layer_c14d31' // div that gets removed when closing the image/video pop-up
-const userPanelClass = 'div.container_debb33' // the part of the UI with username, status, pfp, mute, deafen, and settings
+const appContainerSelector = '.notAppAsidePanel_bd26cc > .layerContainer_cd0de5'
+const imageWrapperClass = 'imageWrapper_d4597d'
+const videoWrapperClass = 'videoWrapper_aa8ea9'
+const carouselSelector = '.modalCarouselWrapper_b586d2 > .wrapper_aa8ea9'
+const imagePopUpLayerParentClass = 'layer_c9e2da' // div that gets removed when closing the image/video pop-up
+const userPanelClass = 'div.container_b2ca13' // the part of the UI with username, status, pfp, mute, deafen, and settings
 
 //function to remove the styles and get params that force a small dimension in discord's image preview
 async function removeDim(imgWrapperNode)
 {
    //remove width and height properties
+  console.log('l')
       if(imgWrapperNode.parentNode.classList.contains(videoWrapperClass))
         return
       imgWrapperNode.style.removeProperty("width");
       imgWrapperNode.style.removeProperty("height");
       let imgNode = imgWrapperNode.childNodes[0];
+  console.log('imgNode',imgNode)
       while(imgNode===null || imgNode.tagName !== 'IMG'){
         await new Promise((a)=>{setTimeout(a,500)})
         imgNode = imgWrapperNode.querySelector('img');
         if(imgWrapperNode===null)
           return;
       }
+  console.log('imgNode2',imgNode)
       imgNode.style.removeProperty("width");
       imgNode.style.removeProperty("height");
       //set max size of image to viewport
@@ -67,6 +70,7 @@ const changeImageDimensions = (mutationsList, observer)=>
       continue;
     for(addedNode of mutations.addedNodes)
     {
+      console.log(addedNode)
       wrapper = addedNode.querySelector('.'+imageWrapperClass)
       if(wrapper === null) continue;
       mutationObserverThree.observe(wrapper,configChild);
