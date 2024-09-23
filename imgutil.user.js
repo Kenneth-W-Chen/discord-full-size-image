@@ -8,7 +8,7 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.8
+// @version     0.1.9
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
@@ -16,7 +16,7 @@
 const appContainerSelector = '.notAppAsidePanel_bd26cc > .layerContainer_cd0de5'
 const imageWrapperClass = 'imageWrapper_d4597d'
 const videoWrapperClass = 'videoWrapper_aa8ea9'
-const carouselSelector = '.modalCarouselWrapper_b586d2 > .wrapper_aa8ea9'
+const carouselSelector = '.wrapper_fb6520'
 const imagePopUpLayerParentClass = 'layer_c9e2da' // div that gets removed when closing the image/video pop-up
 const userPanelClass = 'div.container_b2ca13' // the part of the UI with username, status, pfp, mute, deafen, and settings
 
@@ -48,6 +48,7 @@ async function removeDim(imgWrapperNode)
       let p = new URLSearchParams(uS[1])
       p.delete('width')
       p.delete('height')
+      p.delete('format')
       imgNode.src = uS[0] + '?' + p.toString()
 }
 
