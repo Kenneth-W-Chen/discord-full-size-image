@@ -8,7 +8,7 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.9
+// @version     0.1.10
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
@@ -43,6 +43,7 @@ async function removeDim(imgWrapperNode)
       //set max size of image to viewport
       imgNode.style['max-width'] = '100vh';
       imgNode.style['max-height'] = '100vh';
+  imgNode.style['position'] = 'static';
       // change the source so it requests the full-size image
       let uS = imgNode.src.split('?')
       let p = new URLSearchParams(uS[1])
