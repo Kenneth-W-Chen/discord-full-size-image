@@ -8,7 +8,7 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.10
+// @version     0.1.11
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
@@ -24,20 +24,17 @@ const userPanelClass = 'div.container_b2ca13' // the part of the UI with usernam
 async function removeDim(imgWrapperNode)
 {
    //remove width and height properties
-  console.log('l')
       if(imgWrapperNode.parentNode.classList.contains(videoWrapperClass))
         return
       imgWrapperNode.style.removeProperty("width");
       imgWrapperNode.style.removeProperty("height");
       let imgNode = imgWrapperNode.childNodes[0];
-  console.log('imgNode',imgNode)
       while(imgNode===null || imgNode.tagName !== 'IMG'){
         await new Promise((a)=>{setTimeout(a,500)})
         imgNode = imgWrapperNode.querySelector('img');
         if(imgWrapperNode===null)
           return;
       }
-  console.log('imgNode2',imgNode)
       imgNode.style.removeProperty("width");
       imgNode.style.removeProperty("height");
       //set max size of image to viewport
@@ -51,6 +48,7 @@ async function removeDim(imgWrapperNode)
       p.delete('height')
       p.delete('format')
       imgNode.src = uS[0] + '?' + p.toString()
+      imgNode.onload = ()=>{imgNode.parentNode.style['width']=imgNode.naturalWidth;imgNode.parentNode.style['height']=imgNode.naturalHeight;}
 }
 
 const config = { attributes: false, childList: true, subtree: false };
