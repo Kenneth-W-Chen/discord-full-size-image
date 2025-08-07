@@ -8,7 +8,7 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-full-size-image/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.14
+// @version     0.1.15
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
@@ -52,6 +52,10 @@ async function removeDim(imgWrapperNode)
       p.delete('format')
       imgNode.src = uS[0] + '?' + p.toString()
       imgNode.onload = ()=>{imgNode.parentNode.style['width']=imgNode.naturalWidth;imgNode.parentNode.style['height']=imgNode.naturalHeight;}
+      imgNodeMutationObserver.observe(imgNode,{
+        attributes: true,
+        attributeFilter: ['src']
+      })
 }
 
 const config = { attributes: false, childList: true, subtree: false };
@@ -109,6 +113,23 @@ const nodeRemoved = (mutationsList, observer)=>
     }
 }
 
+const imgDimensionsUpdated = (mutationsList, observer)=>{
+  observer.disconnect()
+  let imgNode = document.querySelector(appContainerSelector + ' > .' + imageWrapperClass + ' > img')
+  let uS = imgNode.src.split('?')
+  let p = new URLSearchParams(uS[1])
+  if(p.has('width')){
+    p.delete('width')
+    p.delete('height')
+    p.delete('format')
+    imgNode.src = uS[0] + '?' + p.toString()
+  }
+  observer.observe(imgNode,{
+    attributes: true,
+    attributeFilter: ['src']
+  })
+}
+
 let carouselWrapperObserver = new MutationObserver((e)=>{
   for(m of e){
     if(m.addedNodes.length > 0&& m.addedNodes[0].tagName==='DIV')
@@ -121,4 +142,5 @@ let carouselWrapperObserver = new MutationObserver((e)=>{
 
 let mutationObserver = new MutationObserver(changeImageDimensions)
 let mutationObserverThree = new MutationObserver(nodeRemoved)
+var imgNodeMutationObserver = new MutationObserver(imgDimensionsUpdated)
 waitForKeyElements(userPanelClass, foo);
