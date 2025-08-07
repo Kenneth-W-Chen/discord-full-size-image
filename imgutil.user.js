@@ -5,18 +5,18 @@
 // @require  https://gist.github.com/raw/2625891/waitForKeyElements.js
 // @match       https://discord.com/channels/*
 // @match       https://discord.com/login
-// @downloadurl   https://github.com/Kenneth-W-Chen/discord-web-image-utilities/raw/main/imgutil.user.js
+// @downloadurl   https://github.com/Kenneth-W-Chen/discord-full-size-image/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.12
+// @version     0.1.14
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
 const debug = false;
-const appContainerSelector = '.notAppAsidePanel_a3002d > .layerContainer_da8173'
+const appContainerSelector = '.notAppAsidePanel_a3002d > .layerContainer_da8173:nth-child(n+5)'
 const imageWrapperClass = 'imageWrapper_af017a'
 const videoWrapperClass = 'videoWrapper_aa8ea9'
-const carouselSelector = '.carouselModal__8a837'
+const carouselSelector = '.wrapper__1bcc7' // direct parent node of left, right nav arrows and div with image
 const imagePopUpLayerParentClass = 'layer_bc663c' // div that gets removed when closing the image/video pop-up
 const userPanelClass = 'div.container__37e49' // the part of the UI with username, status, pfp, mute, deafen, and settings
 
@@ -62,6 +62,7 @@ const foo = ()=>
 {
   // Check to see if the chat container was updated
   const searchNode = document.querySelector(appContainerSelector);
+  if(debug) {console.log('waiting for image node at ');console.log(searchNode)}
   mutationObserver.observe(searchNode, config);
 }
 
@@ -113,7 +114,7 @@ let carouselWrapperObserver = new MutationObserver((e)=>{
     if(m.addedNodes.length > 0&& m.addedNodes[0].tagName==='DIV')
       {
         console.log('remove',m.addedNodes[0])
-        removeDim(m.addedNodes[0])
+        removeDim(m.querySelector('.'+imageWrapperClass))
       break}
   }
 })
