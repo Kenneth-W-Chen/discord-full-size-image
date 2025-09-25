@@ -8,15 +8,15 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-full-size-image/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.15
+// @version     0.1.16
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
 const debug = false;
-const appContainerSelector = '.notAppAsidePanel_a3002d > .layerContainer_da8173:nth-child(n+5)'
+const appContainerSelector = '.notAppAsidePanel_a3002d > .layerContainer__59d0d:nth-child(n+5)'
 const imageWrapperClass = 'imageWrapper_af017a'
 const videoWrapperClass = 'videoWrapper_aa8ea9'
-const carouselSelector = '.wrapper__1bcc7' // direct parent node of left, right nav arrows and div with image
+const carouselSelector = '.carouselModal_d3a6f0' // direct parent node of left, right nav arrows and div with image
 const imagePopUpLayerParentClass = 'layer_bc663c' // div that gets removed when closing the image/video pop-up
 const userPanelClass = 'div.container__37e49' // the part of the UI with username, status, pfp, mute, deafen, and settings
 
@@ -134,8 +134,8 @@ let carouselWrapperObserver = new MutationObserver((e)=>{
   for(m of e){
     if(m.addedNodes.length > 0&& m.addedNodes[0].tagName==='DIV')
       {
-        console.log('remove',m.addedNodes[0])
-        removeDim(m.querySelector('.'+imageWrapperClass))
+        if(debug) console.log('remove',m.addedNodes[0])
+        removeDim(m.addedNodes[0].querySelector('.'+imageWrapperClass))
       break}
   }
 })
