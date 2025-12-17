@@ -8,17 +8,19 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-full-size-image/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.16
+// @version     0.1.17
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
 const debug = false;
-const appContainerSelector = '.notAppAsidePanel_a3002d > .layerContainer__59d0d:nth-child(n+5)'
-const imageWrapperClass = 'imageWrapper_af017a'
-const videoWrapperClass = 'videoWrapper_aa8ea9'
-const carouselSelector = '.carouselModal_d3a6f0' // direct parent node of left, right nav arrows and div with image
-const imagePopUpLayerParentClass = 'layer_bc663c' // div that gets removed when closing the image/video pop-up
-const userPanelClass = 'div.container__37e49' // the part of the UI with username, status, pfp, mute, deafen, and settings
+const appContainerSelector = '.a3002d7de5be5280-notAppAsidePanel > ._59d0d7075b521375-layerContainer:nth-child(n+5)'
+const imageWrapperClass = 'imageWrapper'
+const videoWrapperClass = 'videoWrapper_aa8ea9' //only needed for carousels with videos
+const carouselSelector = '.d3a6f0de39ff36e9-carouselModal'
+const imagePopUpLayerParentClass = 'layer_bc663c' // removed when closing image/carousel
+const userPanelClass = 'section[aria-label="User area"]' // the part of the UI with username, status, pfp, mute, deafen, and settings
+
+
 
 //function to remove the styles and get params that force a small dimension in discord's image preview
 async function removeDim(imgWrapperNode)
@@ -61,7 +63,7 @@ async function removeDim(imgWrapperNode)
 const config = { attributes: false, childList: true, subtree: false };
 const configChild = {attributes:true,childList:true,subtree:false};
 
-//callback that's run when the page loads the main content; adds mutationobserver to observe the chat container
+// starts the search process once the website fully loads
 const foo = ()=>
 {
   // Check to see if the chat container was updated
@@ -78,7 +80,7 @@ const changeImageDimensions = (mutationsList, observer)=>
       continue;
     for(addedNode of mutations.addedNodes)
     {
-      console.log(addedNode)
+      if(debug) console.log(addedNode)
       wrapper = addedNode.querySelector('.'+imageWrapperClass)
       if(wrapper === null) {
         if(debug) console.log('Couldn\'t find image wrapper')
