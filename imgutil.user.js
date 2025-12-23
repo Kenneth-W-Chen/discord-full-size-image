@@ -8,7 +8,7 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-full-size-image/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.17
+// @version     0.1.18
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
@@ -117,7 +117,7 @@ const nodeRemoved = (mutationsList, observer)=>
 
 const imgDimensionsUpdated = (mutationsList, observer)=>{
   observer.disconnect()
-  let imgNode = document.querySelector(appContainerSelector + ' > .' + imageWrapperClass + ' > img')
+  let imgNode = document.querySelector(appContainerSelector).querySelector('.' + imageWrapperClass).querySelector('img')
   let uS = imgNode.src.split('?')
   let p = new URLSearchParams(uS[1])
   if(p.has('width')){
