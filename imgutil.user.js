@@ -8,12 +8,12 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-full-size-image/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.18
+// @version     0.1.19
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
 const debug = false;
-const appContainerSelector = '.a3002d7de5be5280-notAppAsidePanel > ._59d0d7075b521375-layerContainer:nth-child(n+5)'
+const appContainerSelector = '.notAppAsidePanel_a3002d > .layerContainer__59d0d:nth-child(n+5)'
 const imageWrapperClass = 'imageWrapper'
 const videoWrapperClass = 'videoWrapper_aa8ea9' //only needed for carousels with videos
 const carouselSelector = '.d3a6f0de39ff36e9-carouselModal'
