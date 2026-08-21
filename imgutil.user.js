@@ -8,13 +8,13 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-full-size-image/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.22
+// @version     0.1.23
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
 const debug = false;
 const appContainerSelector = '.notAppAsidePanel_a3002d > .layerContainer__59d0d:nth-child(n+5)'
-const imageWrapperClass = 'imageWrapper'
+const imageWrapperClass = '.imageWrapper'
 const videoWrapperClass = 'videoWrapper_aa8ea9' //only needed for carousels with videos
 const carouselSelector = '[class^=mediaArea]' // for carousel
 const imagePopUpLayerParentClass = 'layer_bc663c' // removed when closing image/carousel
@@ -30,6 +30,7 @@ async function removeDim(imgWrapperNode)
       if(debug) console.log('Not removing dimensions because it was a video');
         return
       }
+      if(debug) console.log(imgWrapperNode)
       imgWrapperNode.style.removeProperty("width");
       imgWrapperNode.style.removeProperty("height");
       let imgNode = imgWrapperNode.childNodes[0];
@@ -81,7 +82,7 @@ const changeImageDimensions = (mutationsList, observer)=>
     for(addedNode of mutations.addedNodes)
     {
       if(debug) console.log(addedNode)
-      wrapper = addedNode.querySelector('.'+imageWrapperClass)
+      wrapper = addedNode.querySelector(imageWrapperClass)
       if(wrapper === null) {
         if(debug) console.log('Couldn\'t find image wrapper')
         continue
@@ -93,6 +94,7 @@ const changeImageDimensions = (mutationsList, observer)=>
         if(debug) console.log('Didn\'t find a carousel to observe')
         continue;
       }
+      if(debug)console.log(carousel)
       carouselWrapperObserver.observe(carousel,{childList:true})
       break;
     }
@@ -117,7 +119,7 @@ const nodeRemoved = (mutationsList, observer)=>
 
 const imgDimensionsUpdated = (mutationsList, observer)=>{
   observer.disconnect()
-  let imgNode = document.querySelector(appContainerSelector).querySelector('.' + imageWrapperClass).querySelector('img')
+  let imgNode = document.querySelector(appContainerSelector).querySelector(imageWrapperClass).querySelector('img')
   let uS = imgNode.src.split('?')
   let p = new URLSearchParams(uS[1])
   if(p.has('width')){
@@ -135,10 +137,10 @@ const imgDimensionsUpdated = (mutationsList, observer)=>{
 let carouselWrapperObserver = new MutationObserver((e)=>{
   for(m of e){
     if(m.addedNodes.length > 0&& m.addedNodes[0].tagName==='DIV')
-      {
+    {
         if(debug) console.log('remove',m.addedNodes[0])
-        removeDim(m.addedNodes[0].querySelector('.'+imageWrapperClass))
-      break}
+        removeDim(m.addedNodes[0].querySelector(imageWrapperClass))
+    } else if(debug) console.log(m.addedNodes[0])
   }
 })
 
