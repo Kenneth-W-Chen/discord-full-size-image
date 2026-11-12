@@ -8,19 +8,17 @@
 // @downloadurl   https://github.com/Kenneth-W-Chen/discord-full-size-image/raw/main/imgutil.user.js
 // @inject      into content
 // @grant       none
-// @version     0.1.23
+// @version     0.1.24
 // @author      Kenneth-W-Chen
 // @description Force full image size load in preview pane on Discord
 // ==/UserScript==
 const debug = false;
-const appContainerSelector = '.notAppAsidePanel_a3002d > .layerContainer__59d0d:nth-child(n+5)'
+const appContainerSelector = 'div.layerContainer_VVADeK:nth-child(6)'
 const imageWrapperClass = '.imageWrapper'
 const videoWrapperClass = 'videoWrapper_aa8ea9' //only needed for carousels with videos
 const carouselSelector = '[class^=mediaArea]' // for carousel
 const imagePopUpLayerParentClass = 'layer_bc663c' // removed when closing image/carousel
 const userPanelClass = 'section[class^="panels"]' // the part of the UI with username, status, pfp, mute, deafen, and settings
-
-
 
 //function to remove the styles and get params that force a small dimension in discord's image preview
 async function removeDim(imgWrapperNode)
@@ -67,6 +65,7 @@ const configChild = {attributes:true,childList:true,subtree:false};
 // starts the search process once the website fully loads
 const foo = ()=>
 {
+  console.log("Script started")
   // Check to see if the chat container was updated
   const searchNode = document.querySelector(appContainerSelector);
   if(debug) {console.log('waiting for image node at ');console.log(searchNode)}
